@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/gear"
+        android:icon="@drawable/settings"
+        android:iconTint="@color/white"
+        android:title="ACTION"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/settings"
+                android:title="SETTINGS"
+                app:showAsAction="never" />
+            <item
+                android:id="@+id/favourite"
+                android:title="FAVOURITE"
+                app:showAsAction="never" />
+        </menu>
+
+    </item>
+</menu>
