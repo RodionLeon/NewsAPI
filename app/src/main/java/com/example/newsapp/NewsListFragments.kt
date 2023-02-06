@@ -7,6 +7,10 @@ import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.newsapp.ui.NewsAdapter
+import com.example.newsapp.utills.Constants
 
 
 class NewsListFragments : Fragment() {
@@ -27,7 +31,9 @@ class NewsListFragments : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupMenu()
-
+        val rv = view.findViewById<RecyclerView>(R.id.newsRecyclerView)
+        rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        rv.adapter = NewsAdapter(Constants.newsItemDataStub, requireContext())
 
     }
 

@@ -55,7 +55,7 @@
             app:layout_constraintBottom_toBottomOf="@id/newsImageImageView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.9"
-            
+
 
             tools:text="Author" />
     </androidx.constraintlayout.widget.ConstraintLayout>
