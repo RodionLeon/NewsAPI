@@ -9,31 +9,30 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.newsapp.databinding.FragmentNewsListFragmentsBinding
 import com.example.newsapp.ui.NewsAdapter
 import com.example.newsapp.utills.Constants
 
 
 class NewsListFragments : Fragment() {
+    private var _binding: FragmentNewsListFragmentsBinding? = null
 
+    private val binding get() = _binding!!
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_news_list_fragments, container, false)
+        _binding = FragmentNewsListFragmentsBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupMenu()
-        val rv = view.findViewById<RecyclerView>(R.id.newsRecyclerView)
-        rv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        rv.adapter = NewsAdapter(Constants.newsItemDataStub, requireContext())
+        binding.newsRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        binding.newsRecyclerView.adapter = NewsAdapter(Constants.newsItemDataStub, requireContext())
 
     }
 
@@ -59,5 +58,9 @@ class NewsListFragments : Fragment() {
                 }
             }
         },viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
