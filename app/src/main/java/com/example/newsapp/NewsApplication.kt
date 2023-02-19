@@ -1,4 +1,8 @@
 package com.example.newsapp
 
-class NewsApplication {
+import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
+
+@HiltAndroidApp
+class NewsApplication : Application() {
 }

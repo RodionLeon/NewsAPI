@@ -1,23 +1,33 @@
-package com.example.newsapp
+package com.example.newsapp.ui
 
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.example.newsapp.R
 import com.example.newsapp.databinding.FragmentNewsListFragmentsBinding
-import com.example.newsapp.ui.NewsAdapter
+import com.example.newsapp.ui.adapters.NewsAdapter
+import com.example.newsapp.ui.adapters.NewsPagerAdapter
 import com.example.newsapp.utills.Constants
+import com.example.newsapp.viewModels.MainNewsListViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
-
+@AndroidEntryPoint
 class NewsListFragments : Fragment() {
     private var _binding: FragmentNewsListFragmentsBinding? = null
-
     private val binding get() = _binding!!
+    val viewModel: MainNewsListViewModel by viewModels()
+    val adapter = NewsPagerAdapter()
 
 
     override fun onCreateView(
@@ -31,25 +41,51 @@ class NewsListFragments : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupMenu()
-        binding.newsRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        binding.newsRecyclerView.adapter = NewsAdapter(Constants.newsItemDataStub, requireContext())
+        setupRecycler()
+        setupObserves()
+    }
 
+    private fun setupObserves() {
+        lifecycleScope.launch {
+            viewModel.getNewsList().observe(viewLifecycleOwner) {
+                it?.let {
+                    adapter.submitData(lifecycle, it)
+                }
+            }
+            adapter.loadStateFlow.collect {
+                binding.MainNewsProgressBar.isVisible = it.source.refresh is LoadState.Loading
+            }
+            viewModel.ifProgressBarVisible.observe(viewLifecycleOwner){visible ->
+                if(visible){
+                    binding.MainNewsProgressBar.visibility = View.VISIBLE
+                }
+                else{
+                    binding.MainNewsProgressBar.visibility = View.GONE
+                }
+            }
+        }
+    }
+
+    private fun setupRecycler() {
+        binding.newsRecyclerView.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        binding.newsRecyclerView.adapter = adapter
     }
 
     private fun setupMenu() {
         val menuHost: MenuHost = requireActivity()
-        menuHost.addMenuProvider(object : MenuProvider{
+        menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.main_menu, menu)
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId){
+                return when (menuItem.itemId) {
                     R.id.settings -> {
                         Log.d("TAG", "settings selected ")
                         true
                     }
-                    R.id.favourite ->{
+                    R.id.favourite -> {
                         Log.d("TAG", "favourite selected ")
                         true
                     }
@@ -57,8 +93,9 @@ class NewsListFragments : Fragment() {
 
                 }
             }
-        },viewLifecycleOwner, Lifecycle.State.RESUMED)
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

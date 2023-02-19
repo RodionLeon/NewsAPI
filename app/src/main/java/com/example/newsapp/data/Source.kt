@@ -1,4 +1,10 @@
 package com.example.newsapp.data
 
-class Source {
-}
+import com.google.gson.annotations.SerializedName
+
+data class Source(
+
+    @SerializedName("id") var id: String? = null,
+    @SerializedName("name") var name: String? = null
+
+)
